@@ -1,12 +1,6 @@
 import { z } from 'zod'
 import { createZodDto } from 'nestjs-zod'
-
-// 1. CONSTANTES REUTILIZABLES
-// Definimos validaciones comunes para usarlas en toda la app
-const uuidSchema = z.uuid({ message: 'ID inválido' })
-const slugSchema = z.string()
-  .min(3)
-  .regex(/^[a-z0-9-]+$/, 'El slug solo puede contener minúsculas, números y guiones')
+import { slugSchema, uuidSchema } from 'src/common/dtos'
 
 // 2. ESQUEMA BASE (La fuente de la verdad)
 // Define todas las propiedades posibles de tu entidad Evento aquí.
