@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import { z } from 'zod'
 
-export const envSchema = z
+const envSchema = z
   .object({
     PORT: z.string().min(1, 'PORT is required.').transform(Number),
     ALLOWED_ORIGINS: z
@@ -10,6 +10,12 @@ export const envSchema = z
       .transform((val) => val.split(',').map((origin) => origin.trim())),
     DATABASE_URL: z.string().min(1, 'DATABASE_URL is required.'),
     REDIS_URL: z.string().min(1, 'REDIS_URL is required.'),
+
+    RESEND_APIKEY: z.string().min(1, 'RESEND_APIKEY is required.'),
+    RESEND_FROM_EMAIL: z.string().min(1, 'RESEND_FROM_EMAIL is required.'),
+
+    GOOGLE_CLIENT_ID: z.string().min(1, 'GOOGLE_CLIENT_ID is required.'),
+    GOOGLE_SECRET: z.string().min(1, 'GOOGLE_CLIENT_SECRET is required.'),
   })
   .passthrough()
 
@@ -27,4 +33,10 @@ export const envs: envType = {
   ALLOWED_ORIGINS: envParsed.data.ALLOWED_ORIGINS,
   DATABASE_URL: envParsed.data.DATABASE_URL,
   REDIS_URL: envParsed.data.REDIS_URL,
+
+  RESEND_APIKEY: envParsed.data.RESEND_APIKEY,
+  RESEND_FROM_EMAIL: envParsed.data.RESEND_FROM_EMAIL,
+
+  GOOGLE_CLIENT_ID: envParsed.data.GOOGLE_CLIENT_ID,
+  GOOGLE_SECRET: envParsed.data.GOOGLE_SECRET,
 }
