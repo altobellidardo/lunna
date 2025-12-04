@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model User {
+  id String @id @default(uuid())
+
+  name     String?
+  lastName String?
+  avatar   String?
+  email    String  @unique
+  phone    String?
+  password String?
+  country  String? @default("AR")
+  language String? @default("es-ES")
+
+  emailConfirm Boolean @default(false)
+  phoneConfirm Boolean @default(false)
+
+  sessions Session[]
+
+  status       UserStatusEnum   @default(ACTIVE)
+  authProvider AuthProviderEnum @default(LOCAL)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([createdAt])
+}
+
+model Session {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  refreshToken String
+
+  userAgent String?
+  ipAddress String?
+  location  String?
+
+  isActive Boolean @default(true)
+
+  expiresAt  DateTime?
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([userAgent])
+  @@index([ipAddress])
+}
+
+enum UserStatusEnum {
+  ACTIVE
+  INACTIVE
+  DRAFT
+  BLOCKED
+}
+
+enum AuthProviderEnum {
+  LOCAL
+  GOOGLE
+  FACEBOOK
+  OTHER
+}
+
+model Event {
+  id String @id @default(uuid())
+
+  name       String
+  slug         String    @unique
+  descripcion  String?   @db.Text
+  url          String?
+  image       String?
+  startDate  DateTime?
+  endDate    DateTime?
+  status       EventStatusEnum @default(DRAFT)
+
+  producerId String?
+  producer   Producer? @relation(fields: [producerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+  @@index([startDate])
+}
+
+enum EventStatusEnum {
+  DRAFT
+  PUBLISHED
+  CANCELED
+}
+
+model Producer {
+  id          String   @id @default(uuid())
+  name      String
+  email       String?
+  phone    String?
+  website     String?
+  logo        String?
+
+  events     Event[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

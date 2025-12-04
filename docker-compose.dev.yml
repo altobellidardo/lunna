@@ -1,0 +1,44 @@
+services:
+  postgres_db:
+    image: postgres:15
+    restart: always
+    environment:
+      - POSTGRES_DB=principal
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=123456
+    ports:
+      - "5432:5432"
+    networks:
+      - dev-network
+    healthcheck:
+      # CORREGIDO: -U postgres (antes decia prisma)
+      test: ["CMD-SHELL", "pg_isready -U root -d principal"]
+      interval: 5s
+      timeout: 2s
+      retries: 20
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    command: postgres -c listen_addresses='*'
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  redis_server:
+    container_name: redis-server
+    image: redis:7.2
+    restart: always
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    networks:
+      - dev-network
+
+networks:
+  dev-network:
+
+volumes:
+  postgres_data:
+  redis_data:
